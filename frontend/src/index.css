@@ -727,6 +727,38 @@ button.topbar-item {
   cursor: zoom-in;
 }
 
+.card-video-wrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.card-video-wrap .card-media {
+  cursor: default;
+}
+
+.video-expand-btn {
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.video-expand-btn:hover {
+  background: rgba(0, 0, 0, 0.86);
+  transform: translateY(-1px);
+}
+
 .post-detail-page {
   /* A página de detalhe precisa de mais espaço que o container normal de 470px. */
   width: min(1100px, calc(100vw - 2rem));
@@ -766,6 +798,20 @@ button.topbar-item {
   aspect-ratio: auto;
   object-fit: contain;
   background: var(--surface-2);
+}
+
+.card--detalhe .card-video-wrap {
+  grid-area: media;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+}
+
+.card--detalhe .card-video-wrap .card-media {
+  grid-area: auto;
 }
 
 .card--detalhe .card-body {
@@ -816,11 +862,18 @@ button.topbar-item {
 }
 
 .lightbox-media {
-  max-width: 100%;
-  max-height: 100%;
+  width: auto;
+  height: auto;
+  max-width: 92vw;
+  max-height: 90vh;
   border-radius: 8px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   cursor: default;
+  object-fit: contain;
+}
+
+video.lightbox-media {
+  width: min(1200px, 92vw);
 }
 
 .lightbox-close {

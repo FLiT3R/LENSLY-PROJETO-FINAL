@@ -161,7 +161,26 @@ function PublicacaoCard({ publicacao, aSeguirInicial, expandido = false }) {
       )}
 
       {publicacao.tipo === 'video' ? (
-        <video src={publicacao.urlMedia} controls className="card-media" />
+        <div className={`card-video-wrap${expandido ? ' card-video-wrap--expandible' : ''}`}>
+          <video
+            src={publicacao.urlMedia}
+            controls
+            className="card-media"
+            onClick={aoClicarMedia}
+            onDoubleClick={expandido ? () => setLightboxAberto(true) : undefined}
+          />
+          {expandido && (
+            <button
+              type="button"
+              className="video-expand-btn"
+              onClick={() => setLightboxAberto(true)}
+              aria-label="Ver vídeo em grande"
+              title="Ver vídeo em grande"
+            >
+              ⛶ Ver em grande
+            </button>
+          )}
+        </div>
       ) : (
         <img
           src={publicacao.urlMedia}
