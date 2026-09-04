@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Utilizador {
+  id           Int      @id @default(autoincrement())
+  nome         String   @db.VarChar(100)
+  email        String   @unique @db.VarChar(150)
+  password     String   @db.VarChar(255)
+  bio          String?  @db.Text
+  fotoPerfil   String?  @map("foto_perfil") @db.VarChar(255)
+  dataRegisto  DateTime @default(now()) @map("data_registo")
+
+  publicacoes  Publicacao[]
+  comentarios  Comentario[]
+  likes        Like[]
+  colecoes     Colecao[]
+
+  aSeguir      Seguidor[] @relation("Seguidor")
+  seguidoPor   Seguidor[] @relation("Seguido")
+
+  @@map("utilizadores")
+}
+
+model Colecao {
+  id            Int      @id @default(autoincrement())
+  idUtilizador  Int      @map("id_utilizador")
+  nome          String   @db.VarChar(100)
+  descricao     String?  @db.Text
+  dataCriacao   DateTime @default(now()) @map("data_criacao")
+
+  utilizador    Utilizador   @relation(fields: [idUtilizador], references: [id], onDelete: Cascade)
+  publicacoes   Publicacao[]
+
+  @@map("colecoes")
+}
+
+model Publicacao {
+  id            Int      @id @default(autoincrement())
+  idUtilizador  Int      @map("id_utilizador")
+  idColecao     Int?     @map("id_colecao")
+  tipo          TipoMedia
+  urlMedia      String   @map("url_media") @db.VarChar(255)
+  descricao     String?  @db.Text
+  data          DateTime @default(now())
+
+  utilizador    Utilizador     @relation(fields: [idUtilizador], references: [id], onDelete: Cascade)
+  colecao       Colecao?       @relation(fields: [idColecao], references: [id], onDelete: SetNull)
+  comentarios   Comentario[]
+  likes         Like[]
+  tags          PublicacaoTag[]
+
+  @@map("publicacoes")
+}
+
+model Comentario {
+  id            Int      @id @default(autoincrement())
+  idPublicacao  Int      @map("id_publicacao")
+  idUtilizador  Int      @map("id_utilizador")
+  texto         String   @db.Text
+  data          DateTime @default(now())
+
+  publicacao    Publicacao @relation(fields: [idPublicacao], references: [id], onDelete: Cascade)
+  utilizador    Utilizador @relation(fields: [idUtilizador], references: [id], onDelete: Cascade)
+
+  @@map("comentarios")
+}
+
+model Like {
+  id            Int      @id @default(autoincrement())
+  idPublicacao  Int      @map("id_publicacao")
+  idUtilizador  Int      @map("id_utilizador")
+  data          DateTime @default(now())
+
+  publicacao    Publicacao @relation(fields: [idPublicacao], references: [id], onDelete: Cascade)
+  utilizador    Utilizador @relation(fields: [idUtilizador], references: [id], onDelete: Cascade)
+
+  @@unique([idPublicacao, idUtilizador])
+  @@map("likes")
+}
+
+model Seguidor {
+  idSeguidor Int @map("id_seguidor")
+  idSeguido  Int @map("id_seguido")
+  data       DateTime @default(now())
+
+  seguidor   Utilizador @relation("Seguidor", fields: [idSeguidor], references: [id], onDelete: Cascade)
+  seguido    Utilizador @relation("Seguido", fields: [idSeguido], references: [id], onDelete: Cascade)
+
+  @@id([idSeguidor, idSeguido])
+  @@map("seguidores")
+}
+
+model Tag {
+  id     Int    @id @default(autoincrement())
+  nome   String @unique @db.VarChar(50)
+
+  publicacoes PublicacaoTag[]
+
+  @@map("tags")
+}
+
+model PublicacaoTag {
+  idPublicacao Int @map("id_publicacao")
+  idTag        Int @map("id_tag")
+
+  publicacao Publicacao @relation(fields: [idPublicacao], references: [id], onDelete: Cascade)
+  tag        Tag        @relation(fields: [idTag], references: [id], onDelete: Cascade)
+
+  @@id([idPublicacao, idTag])
+  @@map("publicacao_tags")
+}
+
+enum TipoMedia {
+  foto
+  video
+}
